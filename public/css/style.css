@@ -1,0 +1,57 @@
+:root{
+    --black: #000;
+    --white: #fff;
+    --color1: #e3e024;
+    --color2: #ECAE13;
+}
+
+body{
+    margin: 0px;
+    padding: 0px;
+}
+
+body section{
+    width: 100%;
+    height: 100vh;
+    background-color: var(--black);
+}
+
+body section form{
+    background-color: var(--white);
+    border-radius: 10px;
+}
+body section form a{
+    text-decoration: none;
+}
+body section form a:hover{
+    text-decoration: var(--color2) wavy underline;
+}
+
+body section form .logo #logo1:hover, #logo2:hover, #logo3:hover, #logo4:hover, #logo5:hover, #logo6:hover, #logo7:hover{
+    color: var(--color2);
+    text-shadow: 1px 1px 2px var(--color2), 0 0 1em var(--color1), 0 0 0.2em var(--color2);
+}
+
+body section form input{
+    border: none !important;
+    border-bottom: solid 5px var(--color2) !important;
+}
+
+body section form button[type='submit']{
+    width: 100%;
+    background-color: var(--color2);
+    color: var(--white);
+    top: 20px;
+}
+body section form button[type='submit']:hover{
+    color: var(--white);
+    animation: animation 1s infinite linear;
+}
+@keyframes animation {
+    0% {
+        width: calc(100% + 5px);
+    }
+    50% {
+        width: calc(100% - 5px);
+    }
+}

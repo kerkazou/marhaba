@@ -1,0 +1,2 @@
+npm init -y
+npm i express bcryptjs body-parser dotenv ejs jsonwebtoken mongoose cookie-parser
