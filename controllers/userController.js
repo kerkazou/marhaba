@@ -2,7 +2,6 @@ const db = require('../models');
 const jwt = require('jsonwebtoken');
 var storage = require('local-storage');
 const mailer = require('../middleware/mailer');
-const bcrypt = require('bcrypt');
 const { user } = require('../models');
 const saltRounds = 10;
 
