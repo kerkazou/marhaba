@@ -27,6 +27,9 @@ app.get('/register', (req, res) => {
 app.get('/forgetpassword', (req, res) => {
     res.render('forgetpassword')
 })
+app.get('/formchangepassword', (req, res) => {
+    res.render('formchangepassword')
+})
 const authentification  = require('./routes/authentification.js');
 app.use('/api/auth', authentification);
 

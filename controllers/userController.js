@@ -79,6 +79,8 @@ const activeEmail = async(req , res) => {
   .catch(err=>{res.json({err: err})})
 }
 
+
+
 // Forget Password
 const forgetPassword = async(req , res) => {
   const {body} = req;
@@ -87,7 +89,7 @@ const forgetPassword = async(req , res) => {
     .then(user=>{
       if(user){
         storage('email', body.email);
-        mailer.main('formchangepassword')
+        mailer.main('verifyforgetpassword')
         res.redirect('/forgetpassword')
       }else{
         res.json({message: 'forgetPassword', error: 'user note found'})
@@ -96,23 +98,19 @@ const forgetPassword = async(req , res) => {
     .catch(()=>{res.json({message: 'errror'})})
 }
 
-const verifyforgetPassword = async(req , res) => {
+const verifyForgetPassword = async(req , res) => {
   const activeemail = jwt.verify(req.params.email, process.env.TOKEN_KEY)
   req.user = activeemail
-  User.findOne({email: req.params.email})
+  User.findOne({email: req.user.email})
     .then(user=>{
       if(user){
-        storage('email', req.user.email);
-        res.redirect('/changePassword')
+        storage('email', user.email);
+        res.redirect('/formchangepassword')
       }else{
-        res.json({message: 'forgetPassword', error: 'user note found'})
+        res.json({message: 'forgetpassword', error: 'user note found'})
       }
     })
     .catch(()=>{res.json({message: 'errror'})})
-}
-
-const formChangePassword = async(req , res) => {
-  res.render('/formchangepassword')
 }
 
 const changePassword = async(req , res) => {
@@ -122,12 +120,18 @@ const changePassword = async(req , res) => {
   }
   else{
     const email = storage('email')
-    const activeemail = jwt.verify(email, process.env.TOKEN_KEY)
-    User.updateOne({email: activeemail.email}, {$set: {password: body.password}})
+    User.findOne({email: email})
       .then(user=>{
-        res.redirect('/login')
+        if(user){
+          User.updateOne({email: email}, {$set: {password: body.password}})
+            .then(user=>{
+              res.redirect('/login')
+            })
+            .catch(err=>{res.json({err: err})})
+        }else{
+          res.json({message: 'forgetpassword', error: 'user note found'})
+        }
       })
-      .catch(err=>{res.json({err: err})})
     }
 }
 
@@ -135,9 +139,8 @@ const changePassword = async(req , res) => {
 module.exports = {
   login,
   register,
-  forgetPassword,
   activeEmail,
-  verifyforgetPassword,
-  formChangePassword,
+  forgetPassword,
+  verifyForgetPassword,
   changePassword
 }
