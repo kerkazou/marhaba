@@ -14,6 +14,10 @@ app.use(bodyparser.urlencoded({extended:true}));
 app.use(express.static("public"));
 
 // Route
+const verification  = require('./middleware/verification.js');
+app.get('/home', verification.verification(),(req, res) => {
+    res.render('home')
+})
 app.get('/login', (req, res) => {
     res.render('login')
 })

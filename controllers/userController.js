@@ -22,17 +22,14 @@ const login = async(req , res) => {
     .then(user=>{
       if(user){
         if(body.password == user.password){
-          // Create token
-          const token = jwt.sign({
-            user_id: user._id,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.email,
-            password: user.password,
-            roles: user.roles
-          }, process.env.TOKEN_KEY);
-          storage('token', token);
-          res.json(user);
+          if(user.verification == false){
+            res.json({message: 'Check your email to verify your acount'})
+          }else{
+            // Create token
+            const token = jwt.sign({user}, process.env.TOKEN_KEY);
+            storage('token', token);
+            res.redirect('/home')
+          }
         }else{
           res.json({message: 'Email or password invalid'});
         }
@@ -59,16 +56,27 @@ const register = async(req , res) => {
       }
       else{
         User.create({...body, roles: '634c709e68fda0b8cfaa9199', verification: false})
-          .then(user=>{
+          .then(()=>{
             storage('email', body.email);
-            mailer.main()
-            res.json(user);
+            mailer.main('activeemail')
+            res.redirect('/login')
           })
-          .catch(()=>{res.json({message: 'errror'})})
+          .catch(err=>{res.json({message: err })})
       }
     })
     .catch(()=>{res.json({message: 'errror'})})
   }
+}
+
+// Activation Email
+const activeEmail = async(req , res) => {
+  const activeemail = jwt.verify(req.params.email, process.env.TOKEN_KEY)
+  req.user = activeemail
+  User.updateOne({email: req.user.email}, {$set: {verification: true}})
+  .then(user=>{
+    res.redirect('/login')
+  })
+  .catch(err=>{res.json({err: err})})
 }
 
 // Forget Password
@@ -78,8 +86,9 @@ const forgetPassword = async(req , res) => {
   User.findOne({email})
     .then(user=>{
       if(user){
-        const x = storage('token');
-        res.json({message: 'forgetPassword', user, x})
+        storage('email', body.email);
+        mailer.main('formchangepassword')
+        res.redirect('/forgetpassword')
       }else{
         res.json({message: 'forgetPassword', error: 'user note found'})
       }
@@ -87,14 +96,39 @@ const forgetPassword = async(req , res) => {
     .catch(()=>{res.json({message: 'errror'})})
 }
 
-// Activation Email
-const activeEmail = async(req , res) => {
-  const activeemail = req.params
-  User.findOneAndUpdate({email: activeemail}, {verification: true})
-  .then(user=>{
-    res.json({user})
-  })
-  .catch(err=>{res.json({err: err})})
+const verifyforgetPassword = async(req , res) => {
+  const activeemail = jwt.verify(req.params.email, process.env.TOKEN_KEY)
+  req.user = activeemail
+  User.findOne({email: req.params.email})
+    .then(user=>{
+      if(user){
+        storage('email', req.user.email);
+        res.redirect('/changePassword')
+      }else{
+        res.json({message: 'forgetPassword', error: 'user note found'})
+      }
+    })
+    .catch(()=>{res.json({message: 'errror'})})
+}
+
+const formChangePassword = async(req , res) => {
+  res.render('/formchangepassword')
+}
+
+const changePassword = async(req , res) => {
+  const {body} = req;
+  if(body.password == '' || (body.password != body.condirmepassword)){
+    res.json({message: 'Fill the all files to chege your password'});
+  }
+  else{
+    const email = storage('email')
+    const activeemail = jwt.verify(email, process.env.TOKEN_KEY)
+    User.updateOne({email: activeemail.email}, {$set: {password: body.password}})
+      .then(user=>{
+        res.redirect('/login')
+      })
+      .catch(err=>{res.json({err: err})})
+    }
 }
 
 
@@ -102,5 +136,8 @@ module.exports = {
   login,
   register,
   forgetPassword,
-  activeEmail
+  activeEmail,
+  verifyforgetPassword,
+  formChangePassword,
+  changePassword
 }
