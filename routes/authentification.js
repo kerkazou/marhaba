@@ -12,4 +12,6 @@ router.post('/forgetpassword', userController.forgetPassword);
 router.get('/verifyforgetpassword/:email', userController.verifyForgetPassword);
 router.post('/changepassword', userController.changePassword);
 
+router.post('/resetpassword', userController.resetPassword);
+
 module.exports = router;

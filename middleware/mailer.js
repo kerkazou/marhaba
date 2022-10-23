@@ -12,8 +12,8 @@ function main(path) {
     port: 465,
     secure: true,
     auth: {
-      user: 'kerkazou.zakaria@gmail.com',
-      pass: 'pewwhyfntobthyul',
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD,
     },
   });
 

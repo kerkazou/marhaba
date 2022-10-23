@@ -15,7 +15,7 @@ app.use(express.static("public"));
 
 // Route
 const verification  = require('./middleware/verification.js');
-app.get('/home', verification.verification(),(req, res) => {
+app.get('/home', verification.verification('home'),(req, res) => {
     res.render('home')
 })
 app.get('/login', (req, res) => {
@@ -30,8 +30,13 @@ app.get('/forgetpassword', (req, res) => {
 app.get('/formchangepassword', (req, res) => {
     res.render('formchangepassword')
 })
+app.get('/resetpassword', verification.verification('resetpassword'), (req, res) => {
+    res.render('resetpassword')
+})
 const authentification  = require('./routes/authentification.js');
 app.use('/api/auth', authentification);
+const user  = require('./routes/user.js');
+app.use('/api/user', user);
 
 // Port
 const port = process.env.PORT || 3000;

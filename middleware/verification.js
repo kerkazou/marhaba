@@ -3,12 +3,12 @@ const jwt = require('jsonwebtoken');
 var storage = require('local-storage');
 const { render } = require("ejs");
 
-function verification() {
+function verification(page) {
   return (req,res,next)=>{
     if(storage('token')){
       const token = jwt.verify(storage('token'), process.env.TOKEN_KEY)
       if(token){
-        res.render('home')
+        res.render(page)
       }
     }
     else{
@@ -18,5 +18,5 @@ function verification() {
 }
 
 module.exports = {
-  verification
+  verification,
 }
