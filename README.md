@@ -6,9 +6,9 @@
 5) (GET) api/auth/verifyforgetpassword/:email ???
 6) (POST)(password,password) api/auth/changepassword
 7) (POST)(password,password) api/auth/resetpassword
+8) (GET) api/auth/logout
 
 <------------ Message after login ------------>
-8) (GET) api/user/livreur/me
-9) (GET) api/user/manager/me
-10) (GET) api/user/client/me
-
+9) (GET) api/user/livreur/me
+10) (GET) api/user/manager/me
+11) (GET) api/user/client/me
