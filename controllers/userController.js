@@ -60,6 +60,9 @@ const livreur = (req, res) => {
     })
     .catch(err=>{res.json({message: err })})
   }
+  else{
+    res.json({message: 'You are logout' })
+  }
 }
 const manager = (req, res) => {
   const token = storage('token');
@@ -75,6 +78,9 @@ const manager = (req, res) => {
     })
     .catch(err=>{res.json({message: err })})
   }
+  else{
+    res.json({message: 'You are logout' })
+  }
 }
 const client = (req, res) => {
   const token = storage('token');
@@ -89,6 +95,9 @@ const client = (req, res) => {
       }
     })
     .catch(err=>{res.json({message: err })})
+  }
+  else{
+    res.json({message: 'You are logout' })
   }
 }
 
@@ -210,6 +219,11 @@ const resetPassword = async(req , res) => {
   }
 }
 
+const logout = (req,res) => {
+  storage.clear();
+    res.json({message: 'You are logout'})
+}
+
 
 module.exports = {
   login,
@@ -221,5 +235,6 @@ module.exports = {
   resetPassword,
   livreur,
   manager,
-  client
+  client,
+  logout
 }
