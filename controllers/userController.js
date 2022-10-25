@@ -22,22 +22,26 @@ const login = async(req , res) => {
     User.findOne({email: email})
     .then(user=>{
       if(user){
-        if(body.password == user.password){
-          if(user.verification == false){
-            res.json({message: 'Check your email to verify your acount'})
-          }else{
-            // Create token
-            const token = jwt.sign({user}, process.env.TOKEN_KEY);
-            storage('token', token);
-            Role.findOne({_id: user.roles})
-              .then(nameRole=>{
-                res.redirect(`/api/user/${nameRole.name}/me`)
-              })
-              .catch(err=>{res.json({message: err })})
-          }
-          }else{
-            res.json({message: 'Email or password invalid'});
-          }
+        bcrypt.compare(body.password, user.password)
+          .then(a=>{
+            if(a){
+              if(user.verification == false){
+                res.json({message: 'Check your email to verify your acount'})
+              }else{
+                // Create token
+                const token = jwt.sign({user}, process.env.TOKEN_KEY);
+                storage('token', token);
+                Role.findOne({_id: user.roles})
+                  .then(nameRole=>{
+                    res.redirect(`/api/user/${nameRole.name}/me`)
+                  })
+                  .catch(err=>{res.json({message: err })})
+              }
+            }else{
+              res.json({message: 'Email or password invalid'});
+            }
+          })
+          .catch(err=>{res.json({message: err })})
       }else{
         res.json({error:'Email or password invalid'});
       }
@@ -59,12 +63,16 @@ const register = async(req , res) => {
         res.json({message: 'User is arrely exist'})
       }
       else{
-        User.create({...body, roles: '634c709e68fda0b8cfaa9199', verification: false})
-          .then(user=>{
-            storage('email', body.email);
-            mailer.main('activeemail')
-            res.json({message: 'Your account added', user: user})
+        bcrypt.hash(body.password, saltRounds)
+          .then(hash=>{
+            User.create({...body, password: hash, roles: '634c709e68fda0b8cfaa9199', verification: false})
+              .then(user=>{
+                storage('email', body.email);
+                mailer.main('activeemail')
+                res.json({message: 'Your account added', user: user})
+              })
           })
+          .catch(()=>{res.json({message: 'errror'})})
       }
     })
     .catch(()=>{res.json({message: 'errror'})})

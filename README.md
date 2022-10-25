@@ -9,6 +9,6 @@
 8) (GET) api/auth/logout
 
 <------------ Message after login ------------>
-9) (GET) api/user/livreur/me
-10) (GET) api/user/manager/me
-11) (GET) api/user/client/me
+1) (GET) api/user/livreur/me
+3) (GET) api/user/manager/me
+3) (GET) api/user/client/me
